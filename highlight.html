@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Highlight Test</title>
+</head>
+<body>
+    <audio id="audiofile" src="./안녕하세요.mp3" controls></audio><br>
+    <div id="subtitles"></div>
+
+    <script>
+        var audioPlayer = document.getElementById("audiofile");
+        var subtitles = document.getElementById("subtitles");
+        var syncData = [
+                {"end": "0.125","start": "0.001","text": "안"},
+                {"end": "0.225","start": "0.125","text": "녕"},
+                {"end": "0.321","start": "0.225","text": "하"},
+                {"end": "0.453","start": "0.321","text": "세"},
+                {"end": "0.545","start": "0.453","text": "요"},
+            ];
+        createSubtitles();
+
+        function createSubtitles()
+        {
+            var element;
+            for (let i=0; i<syncData.length; i++) {
+                element = document.createElement('span');
+                element.setAttribute("id", "c_" + i);
+                element.innerText = syncData[i].text;
+                subtitles.appendChild(element);
+            }
+
+            /*
+              [참고사항]
+              
+               timeupdate cycle이 대략 0.02~0.03초로 되어있어
+               end시간까지 고려해서 if문을 작성할 경우
+               글자 몇 군데가 색이 칠해지지 않음.
+               따라서 시작 시간만을 가지고 if문을 작성함.
+
+               jwplayer를 이용한 function fnSeekPlayer에서
+               jwplayer(id).getState(); 부분의 cycle이 확실하지 않기 때문에
+               만약 0.001초 간격으로 지나가는 시간대를 업데이트 해준다면
+               if문에 end까지 적용해도 될 듯
+            */
+            audioPlayer.addEventListener("timeupdate", function(e) {
+                syncData.forEach(function(element, index, array){
+                    console.log(audioPlayer.currentTime);
+                    if( audioPlayer.currentTime >= element.start)
+                        subtitles.children[index].style.background = 'yellow';
+                });
+            });
+        }
+    </script>
+</body>
+</html>
+
